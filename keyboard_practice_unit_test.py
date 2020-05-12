@@ -5,6 +5,7 @@ from unittest.mock import patch, mock_open
 from keyboard_practice import KeyboardPractice
 from pytest_socket import disable_socket
 import wikipedia
+import pyperclip
 
 class TestKeyboardPractice(unittest.TestCase):   
 
@@ -64,15 +65,40 @@ class TestKeyboardPractice(unittest.TestCase):
         Tests if the error corrections works as expected.
         """
         kp = KeyboardPractice()
-        self.assertEqual(kp.get_text_from_string("-", stats=False), "|-|")
+        self.assertEqual(kp.get_text_from_string(".-|", stats=False), ".|-||")
+        self.assertEqual(kp.get_text_from_string("a-a", stats=False), "a-a")
+
         self.assertEqual(kp.get_text_from_string("\n\n", stats=False), "|")
         self.assertEqual(kp.get_text_from_string("\n", stats=False), "|")
         self.assertEqual(kp.get_text_from_string("\t", stats=False), "|")
+
         self.assertEqual(kp.get_text_from_string("   ", stats=False), "|")
         self.assertEqual(kp.get_text_from_string("  ", stats=False), "|")
         self.assertEqual(kp.get_text_from_string(" ", stats=False), "|")
-        self.assertEqual(kp.get_text_from_string(".(", stats=False), ". (")
-        self.assertEqual(kp.get_text_from_string(".[", stats=False), ". [")
+
+        self.assertEqual(kp.get_text_from_string(".a", stats=False), ".|a")
+        self.assertEqual(kp.get_text_from_string(".A", stats=False), ".|A")
+        self.assertEqual(kp.get_text_from_string(".(", stats=False), ".|(")
+        self.assertEqual(kp.get_text_from_string(".[", stats=False), ".|[")
+        self.assertEqual(kp.get_text_from_string(".{", stats=False), ".|{")
+
+        self.assertEqual(kp.get_text_from_string(",a", stats=False), ",|a")
+        self.assertEqual(kp.get_text_from_string(",A", stats=False), ",|A")
+        self.assertEqual(kp.get_text_from_string(",(", stats=False), ",|(")
+        self.assertEqual(kp.get_text_from_string(",[", stats=False), ",|[")
+        self.assertEqual(kp.get_text_from_string(",{", stats=False), ",|{")
+
+        self.assertEqual(kp.get_text_from_string(";a", stats=False), ";|a")
+        self.assertEqual(kp.get_text_from_string(";A", stats=False), ";|A")
+        self.assertEqual(kp.get_text_from_string(";(", stats=False), ";|(")
+        self.assertEqual(kp.get_text_from_string(";[", stats=False), ";|[")
+        self.assertEqual(kp.get_text_from_string(";{", stats=False), ";|{")
+
+        self.assertEqual(kp.get_text_from_string(":a", stats=False), ":|a")
+        self.assertEqual(kp.get_text_from_string(":A", stats=False), ":|A")
+        self.assertEqual(kp.get_text_from_string(":(", stats=False), ":|(")
+        self.assertEqual(kp.get_text_from_string(":[", stats=False), ":|[")
+        self.assertEqual(kp.get_text_from_string(":{", stats=False), ":|{")
 
     # WIKIPEDIA TESTS
     @patch.object(wikipedia, "summary")

@@ -4,6 +4,8 @@ import os
 import getopt
 import wikipedia
 import subprocess
+import re
+import pyperclip
 
 def init(args):
     """
@@ -35,7 +37,7 @@ def init(args):
         ["file=", "wikipedia=", "string="])
     
     kp = KeyboardPractice()
-    
+
     for opt, arg in opts:
         if opt in ("-f", "--file"):
             lines = kp.get_text_from_file(arg)
@@ -44,6 +46,7 @@ def init(args):
         elif opt in ("-s", "--string"):
             lines = kp.get_text_from_string(arg)
 
+    pyperclip.copy(lines)
     # TODO clipboard pasting
     print("\n{}\n".format(lines))
 
@@ -158,18 +161,18 @@ class KeyboardPractice:
             processed string as 10fastfingers expects it
         """
         process_set = [
-            ("-", " - "),
-            ("\n\n", " "),
-            ("\n", " "),
-            ("\t", " "),
-            ("   ", " "),
-            ("  ", " "),
-            (" ", "|"),
-            (".(", ". ("),
-            (".[", ". ["),
+            ("–", "-"),
+            # adds space between .|;|:|, and (|[|{|a-z
+            (r"(\.|,|;|:)([\[|\(|\{|\w])", r"\1 \2"), 
+            #dashes with non-chars to " - "
+            (r"(\W)-(\W)", r"\1 - \2"), 
+            #spaces, tabs and new lines to single space
+            (r"\n+|\t+|\s+", " "),  
+            #spaces  to pipe
+            (r"\s+", "|"), 
         ]
         for find, replace in process_set:
-            text = replace.join(text.split(find))
+            text = re.sub(find, replace, text)
 
         if stats:
             text = "{}\n\n{}".format(text, self.__produce_text_stats(text))
